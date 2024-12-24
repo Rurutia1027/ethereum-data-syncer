@@ -6,9 +6,10 @@
 // variables such as API_KEY (e.g., MetaMask, Alchemy), DataSource URLs(e.g., RDBMS, Redis, GraphQL),
 // and other configuration variables, including those required by docker-compose.yml.
 //
-// **Security Note**: API keys stored in this configuration might face security risks, including potential leakage.
+// **Security Note**: API keys stored in this configuration might face security risks for purchased API_KEYs, including potential leakage.
 // - For local development, it's acceptable to store keys in the .env file.
 // - In CI/CD environments (e.g., GitHub Actions), it's recommended to use GitHub Secrets to prevent accidential exposure of sensitive data.
+
 use core::panic;
 use dotenv::dotenv;
 use lazy_static::lazy_static;
@@ -47,12 +48,26 @@ pub fn get_env_bool(key: &str) -> Option<bool> {
 
 pub fn get_env_config() -> EnvConfig {
     EnvConfig {
-        alchemy_url: get_env_var("ALCHEMY_API_KEY").expect("ALCHEMY_API_KEY is required!"),
+        alchemy_url: get_env_var("ALCHEMY_URL").expect("ALCHEMY_URL is required!"),
+        alchemy_api_key: get_env_var("ALCHEMY_API_KEY").expect("ALCHEMY_API_KEY is required!"),
+        alchemy_rpc_endpoint: get_env_var("ALCHEMY_RPC_ENDPOINT")
+            .expect("ALCHEMY_RPC_ENDPOINT is required!"),
+
+        metamask_url: get_env_var("METAMASK_URL").expect("METAMASK_URL is required!"),
+        metamask_api_key: get_env_var("METAMASK_API_KEY").expect("METAMASK_API_KEY is required!"),
+        metamast_rpc_endpoint: get_env_var("METAMASK_RPC_ENDPOINT")
+            .expect("METAMASK_RPC_ENDPOINT is required!"),
     }
 }
 
 pub struct EnvConfig {
-    alchemy_url: String,
+    pub alchemy_url: String,
+    pub alchemy_rpc_endpoint: String,
+    pub alchemy_api_key: String,
+
+    pub metamask_url: String,
+    pub metamast_rpc_endpoint: String,
+    pub metamask_api_key: String,
 }
 
 #[cfg(test)]
@@ -64,6 +79,14 @@ mod tests {
         let config_key = "ALCHEMY_API_KEY";
         let ret = get_env_var(config_key).expect("ALCHEMY_API_KEY is required!");
         assert!(ret.len() > 0);
+
+        let config_key = "ALCHEMY_URL";
+        let ret = get_env_var(&config_key).expect("ALCHEMY_URL is required!");
+        assert!(ret.len() > 0);
+
+        let config_key = "ALCHEMY_RPC_ENDPOINT";
+        let ret = get_env_var(&config_key).expect("ALCHEMY_RPC_ENDPOINT is required!");
+        assert!(ret.len() > 0);
     }
 
     #[test]
@@ -71,11 +94,23 @@ mod tests {
         let env_config = get_env_config();
         let ret = env_config.alchemy_url;
         assert!(ret.len() > 5);
+
+        let ret = env_config.alchemy_api_key;
+        assert!(ret.len() > 5);
+
+        let ret = env_config.alchemy_rpc_endpoint;
+        assert!(ret.len() > 5);
     }
 
     #[test]
     fn test_lazy_static_instance_of_env_config() {
         let ret = ENV_CONFIG.alchemy_url.as_str();
+        assert!(ret.len() > 5);
+
+        let ret = ENV_CONFIG.alchemy_api_key.as_str();
+        assert!(ret.len() > 5);
+
+        let ret = ENV_CONFIG.alchemy_rpc_endpoint.as_str();
         assert!(ret.len() > 5);
     }
 }
