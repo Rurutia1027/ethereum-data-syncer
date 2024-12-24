@@ -1385,9 +1385,8 @@ checksum = "7e36cc9d416881d2e24f9a963be5fb1cd90966419ac844274161d10488b3e825"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
- "js-sys",
  "num-traits",
- "wasm-bindgen",
+ "serde",
  "windows-targets",
 ]
 
@@ -1705,6 +1704,7 @@ dependencies = [
  "dotenv",
  "eyre",
  "futures-util",
+ "serde",
  "serde_json",
  "tokio",
  "tokio-tungstenite 0.15.0",

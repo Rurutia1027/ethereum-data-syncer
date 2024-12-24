@@ -1,0 +1,35 @@
+name: Ethereum Data Syncer CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Build and Test Ethereum Data Syncer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: "1.82.0"
+          override: true
+
+      - name: Build and Test Project
+        env:
+          RUSTFLAGS: "-Awarnings" # Suppress warnings
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }} # Read from GitHub secrets
+          METAMASK_API_KEY: ${{ secrets.METAMASK_API_KEY }} # Read from GitHub secrets
+        run: |
+          echo "Building project"
+          cargo build --verbose
+          echo "Running tests"
+          cargo test --verbose -- --nocapture

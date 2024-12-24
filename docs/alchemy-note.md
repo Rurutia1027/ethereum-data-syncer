@@ -11,6 +11,8 @@ This documennt provides notes on the various API Endpoints exposed by Alchemy an
 ### Getting Blocks 
 Retrieves information from a particular block in the blockchain. 
 #### `eth_getBlockByHash`
+Returns information about a block by block hash. 
+
 ```shell 
 curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
 --header 'Content-Type: application/json' \
@@ -20,8 +22,8 @@ curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
   "jsonrpc": "2.0",
   "method": "eth_getBlockByHash",
   "params": [
-    "0xe76d777791f48b5995d20789183514f4aa8bbf09e357383e9a44fae025c6c50a",
-    false
+    "0xe76d777791f48b5995d20789183514f4aa8bbf09e357383e9a44fae025c6c50a", // block hash 
+    false // if true, it returns the full transaction object, otherwise only return the hashes of the transactions. 
   ]
 }'
 ```
