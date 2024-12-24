@@ -7,7 +7,7 @@ Alchemy provides two primary method for accessing Ethereum datasets: through the
 
 This documennt provides notes on the various API Endpoints exposed by Alchemy and outlines the process of abstracting response body data into data models. These abstracted data models will be then be taken into consideration when creating the underlying schemas of current project [ethereum-data-syncer](../../ethereum-data-syncer/).
 
-## Ethereum Standard APIs 
+## Ethereum Standard APIs (via Postman)
 ### Getting Blocks 
 Retrieves information from a particular block in the blockchain. 
 #### `eth_getBlockByHash`
@@ -46,44 +46,450 @@ Returns information regarding an address's stored on-chain data.
 #### `eth_accounts`
 #### `eth_getStorageAt`
 #### `eth_getProof`
+```shell 
+
+```
 
 ### Event Logs 
 Returns logs which are records that denote/provide context on specific events within a smart contract, like a token transfer or a change of ownership. 
 #### `eth_getLogs`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getLogs",
+  "params": [
+    {
+      "address": [
+        "0xb59f67a8bff5d8cd03f6ac17265c550ed8f33907"
+      ],
+      "fromBlock": "0x429d3b",
+      "toBlock": "latest",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x00000000000000000000000000b46c2526e227482e2ebb8f4c69e4674d262e75",
+        "0x00000000000000000000000054a2d42a40f51259dedd1978f6c118a0f0eff078"
+      ]
+    }
+  ]
+}'
+```
 #### `eth_newFilter`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_newFilter",
+  "params": [
+    {
+      "address": [
+        "0xb59f67a8bff5d8cd03f6ac17265c550ed8f33907"
+      ],
+      "fromBlock": "0x429d3b",
+      "toBlock": "latest",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x00000000000000000000000000b46c2526e227482e2ebb8f4c69e4674d262e75",
+        "0x00000000000000000000000054a2d42a40f51259dedd1978f6c118a0f0eff078"
+      ]
+    }
+  ]
+}'
+```
+
 #### `eth_newPendingTransactionFilter`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_newPendingTransactionFilter"
+}'
+```
+
 #### `eth_newBlockFilter`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_newBlockFilter"
+}'
+```
 #### `eth_getFilterChanges`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "0x1"
+  ],
+  "method": "eth_getFilterChanges"
+}'
+```
+
 #### `eth_uninstallFilter`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_uninstallFilter",
+  "params": ["0x0"]
+}'
+```
 
 ### Chain Information 
 Returns information on the Ethereum network and internal settings. 
 
 #### `eth_chainId`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_chainId"
+}'
+```
+
 #### `eth_protocolVersion`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_protocolVersion"
+}'
+```
+
+
 #### `net_listening`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "net_listening"
+}'
+```
+
+
 #### `net_version`
+- **eth-mainnet**
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "net_version"
+}'
+```
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": "1"
+}
+```
+
+- **eth-mainnet**
+```shell 
+curl --location 'https://eth-sepolia.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "net_version"
+}'
+```
+
+```json 
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": "11155111"
+}
+```
+
+
+- **eth-mainnet**
+```shell 
+curl --location 'https://eth-holesky.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "net_version"
+}'
+```
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": "17000"
+}
+```
 
 ### Getting Uncles 
 Returns information on uncle blocks which are network rejected blocks and replaced by a canonical block instead. 
 
 #### `eth_getUncleCountByBlockHash`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getUncleCountByBlockHash"
+}'
+```
+
 #### `eth_getUncleByBlockNumberAndIndex`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "earliest",
+    "0x0"
+  ],
+  "method": "eth_getUncleByBlockNumberAndIndex"
+}'
+```
+
 #### `eth_getUncleByBlockHashAndIndex`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "0xb3e8c898cfbf4072eaad440e8606e578a33ca4fafc27d7936d83d7392ba3e939",
+    "0x0"
+  ],
+  "method": "eth_getUncleByBlockHashAndIndex"
+}'
+```
 #### `eth_getUncleCountByBlockNumber`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "latest",
+    "0x0"
+  ],
+  "method": "eth_getUncleByBlockNumberAndIndex"
+}'
+```
 
 ### Gas Estimation 
 Returns information on the Ethereum network gas estimates. 
 #### `eth_estimateGas`
+```shell
+ curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+    "jsonrpc":"2.0",
+    "method":"eth_estimateGas",
+    "params":[{
+    "from": "0x8D97689C9818892B700e27F316cc3E41e17fBeb9",
+    "to": "0xd3CdA913deB6f67967B99D67aCDFa1712C293601",
+    "value": "0x186a0"
+    }],
+    "id":1
+}'
+```
+
+```json 
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": "0x5208"
+}
+```
+
 #### `eth_gasPrice`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+    "jsonrpc":"2.0",
+    "method":"eth_gasPrice",
+    "id": "1"
+}'
+```
+
+```json 
+{
+    "jsonrpc": "2.0",
+    "id": "1",
+    "result": "0xff915c5c"
+}
+```
+
 #### `eth_feeHistory`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+    "jsonrpc":"2.0",
+    "method":"eth_feeHistory",
+    "params":[4, "latest", [25, 75]],
+    "id":1
+}'
+```
+
+```json 
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+        "oldestBlock": "0x1479e2e",
+        "reward": [
+            [
+                "0xc9787f3",
+                "0x3393e451"
+            ],
+            [
+                "0x1dda6768",
+                "0x77359400"
+            ],
+            [
+                "0x26dd5b32",
+                "0x77359400"
+            ],
+            [
+                "0x2faf080",
+                "0x4c7a7c7d"
+            ]
+        ],
+        "baseFeePerGas": [
+            "0xfbd69f07",
+            "0x118174c98",
+            "0x10f7840a6",
+            "0x1079dad3e",
+            "0x10a6a2504"
+        ],
+        "gasUsedRatio": [
+            0.9487425666666667,
+            0.37687893333333333,
+            0.38427716666666667,
+            0.5424663666666667
+        ],
+        "baseFeePerBlobGas": [
+            "0x437ef56d",
+            "0x4beed42a",
+            "0x556caec2",
+            "0x4beed42a",
+            "0x4ef9325c"
+        ],
+        "blobGasUsedRatio": [
+            1,
+            1,
+            0,
+            0.6666666666666666
+        ]
+    }
+}
+```
 #### `eth_maxPriorityFeePerGas`
-#### `eth_createAccessList`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+    "jsonrpc":"2.0",
+    "method":"eth_maxPriorityFeePerGas",
+    "id":1
+}'
+```
+
+```json 
+{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": "0x70ea40"
+}
+```
 
 ### Web3 
 Returns Ethereum network configuration information. 
 #### `web3_clientVersion`
+```shell 
+curl --location 'https://arb-mainnet.g.alchemy.com/v2/{{ALCHEMY_API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+    "jsonrpc":"2.0",
+    "method":"web3_clientVersion",
+    "params":[],
+    "id":0
+}'
+```
+
+```json 
+{
+    "jsonrpc": "2.0",
+    "id": 0,
+    "error": {
+        "code": -32600,
+        "message": "ARB_MAINNET is not enabled for this app."
+    }
+}
+```
+
 #### `web3_sha3`
+```shell 
+curl --location 'https://arb-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+    "jsonrpc":"2.0",
+    "method":"web3_sha3",
+    "params":["0x68656c6c6f20776f726c64"],
+    "id":64
+}'
+```
 
 ### Real-time Events 
 This introduces WebSocket-based requests/responses which leverage a network connection allowing developers to listen for changes continuously without the need for HTTP polling. 
@@ -435,9 +841,6 @@ This introduces WebSocket-based requests/responses which leverage a network conn
     "jsonrpc": "2.0"
 }
 ```
-
-
-
 
 ### Enhanced APIs 
 ```rust
