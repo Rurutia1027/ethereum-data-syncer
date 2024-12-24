@@ -11,43 +11,287 @@ This documennt provides notes on the various API Endpoints exposed by Alchemy an
 ### Getting Blocks 
 Retrieves information from a particular block in the blockchain. 
 #### `eth_getBlockByHash`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getBlockByHash",
+  "params": [
+    "0xe76d777791f48b5995d20789183514f4aa8bbf09e357383e9a44fae025c6c50a",
+    false
+  ]
+}'
+```
 
 #### `eth_blocknumber`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_blockNumber"
+}'
+```
 
 #### `eth_getBlockByNumber`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getBlockByNumber",
+  "params": [
+    "0x1b4", 
+    true
+  ]
+}'
+```
 
 #### `eth_getBlockReceipts`
-
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getBlockReceipts",
+  "params": [
+    "latest"
+  ]
+}'
+```
 
 #### `eth_getBlockTransactionCountByHash`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+    "jsonrpc": "2.0",
+    "method": "eth_getBlockTransactionCountByHash",
+    "params": [
+        "0x8243343df08b9751f5ca0c5f8c9c0460d8a9b6351066fae0acbd4d3e776de8bb"
+    ],
+    "id": 0
+}'
+```
 
 #### `eth_getBlockTransactionCountByNumber`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getBlockTransactionCountByNumber",
+  "params": ["latest"]
+
+}'
+```
 
 ### Reading Transactions 
 Retrieves information on the state data for addresses regardless of whether it is a user or a smart contract. 
 
 #### `eth_getTransactionByHash`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getTransactionByHash",
+  "params": [
+    "0x88df016429689c079f3b2f6ad39fa052532c56795b733da78a91ebe6a713944b"
+  ]
+}'
+```
+
 #### `eth_getTransactionByBlockHashAndIndex`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "0xbf06c77f6ed9a65441795eb8c2ccd694b3fc9b4d1be6066bf7ed52c73c5ec97c",
+    "0x64"
+  ],
+  "method": "eth_getTransactionByBlockHashAndIndex"
+}'
+```
+
+
 #### `eth_getTransactionByBlockNumberAndIndex`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getTransactionByBlockNumberAndIndex",
+  "params": ["earliest"]
+}'
+```
 #### `eth_getTransactionReceipt`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getTransactionReceipt",
+  "params": [
+    "0x8fc90a6c3ee3001cdcbbb685b4fbe67b1fa2bec575b15b0395fea5540d0901ae"
+  ]
+}'
+```
 #### `eth_getTransactionCount`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "0xe5cB067E90D5Cd1F8052B83562Ae670bA4A211a8",
+    "latest"
+  ],
+  "method": "eth_getTransactionCount"
+}'
+```
 
 ### Writing Transactions & EVM Execution 
 Allows developers to send ETH from one address to another, write data on-chain, and interact with smart contracts. 
 
 #### `eth_sendRawTransaction`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "0xf86d808504a817c800825208943535353535353535353535353535353535353535880de0b6b3a7640000801ca0e0d2e3f3d8de8a0c9f25d0b02c7a8a91e7e1c818e6f37a49d8b04f9a9a96a1a0620a6c8d95e0f289bfbf2b3d3e476de6b9bc6d0e974c06f1e4de5be7c5ef0e10"
+  ],
+  "method": "eth_sendRawTransaction"
+}'
+```
 #### `eth_call`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_call",
+  "params": [
+    {
+      "to": "0xd46e8dd67c5d32be8058bb8eb970870f07244567",
+      "gas": "0x0",
+      "gasPrice": "0x9184e72a000",
+      "value": "0x0",
+      "data": "0x"
+    },
+    {
+      "to": "0xd46e8dd67c5d32be8058bb8eb970870f07244567",
+      "gas": "0x0",
+      "gasPrice": "0x9184e72a000",
+      "value": "0x0",
+      "data": "0x"
+    }
+  ]
+}'
+```
 
 ### Account Information 
 Returns information regarding an address's stored on-chain data. 
 
 #### `eth_getCode`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "0xe5cB067E90D5Cd1F8052B83562Ae670bA4A211a8",
+    "latest"
+  ],
+  "method": "eth_getCode"
+}'
+```
 #### `eth_getBalance`
+```shell 
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "params": [
+    "0xe5cB067E90D5Cd1F8052B83562Ae670bA4A211a8",
+    "latest"
+  ],
+  "method": "eth_getBalance"
+}'
+```
 #### `eth_accounts`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_accounts"
+}'
+```
 #### `eth_getStorageAt`
+```shell
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+  "id": 1,
+  "jsonrpc": "2.0",
+  "method": "eth_getStorageAt",
+  "params": [
+    "0x407d73d8a49eeb85d32cf465507dd71d507100c1",
+    "0x0",
+    "latest"
+  ]
+}'
+```
+
 #### `eth_getProof`
 ```shell 
-
+curl --location 'https://eth-mainnet.g.alchemy.com/v2/{{API_KEY}}' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: _cfuvid=MO0U22rrPuh1n5aTvDYmo2y9ZboW0JiFoPaabqicrdI-1735023892227-0.0.1.1-604800000' \
+--data '{
+    "jsonrpc":"2.0",
+    "method":"eth_getProof",
+    "params":["0x7F0d15C7FAae65896648C8273B6d7E43f58Fa842",["0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421"],"latest"],
+    "id":1
+}'
 ```
 
 ### Event Logs 
