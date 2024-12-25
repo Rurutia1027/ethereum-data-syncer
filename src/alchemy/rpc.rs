@@ -164,7 +164,7 @@ impl ApiClient {
 }
 
 impl EthereumRpcMethods for ApiClient {
-    async fn eth_get_block_by_hash(&self, hash: BlockHash) -> Value {
+    async fn eth_get_block_by_hash(&self, hash: BlockHash, full_transaction: bool) -> Value {
         let method = EthRpcMethodName::ETH_GETBLOCKBYHASH;
         // todo!(), we need to create two id_pool one for subscribe stream,
         // the other for this rpc-json api request
@@ -173,7 +173,7 @@ impl EthereumRpcMethods for ApiClient {
         // value match with the request's id field's value
 
         // but for now, take 1 for temporary
-        self.call(method, json!((hash)), 1)
+        self.call(method, json!((hash, full_transaction)), 1)
             .await
             .unwrap_or_default()
     }
@@ -222,7 +222,7 @@ impl EthereumRpcMethods for ApiClient {
 
 #[cfg(test)]
 mod tests {
-    use std::process::exit;
+    use std::{num::ParseIntError, process::exit};
 
     use serde::de::value;
 
@@ -276,6 +276,120 @@ mod tests {
         // and converted it back into a valid value in type of i32 which declared as the BlockNumber
         // which invoke function of eth_get_block_by_number requires
         // but, again... in the scope of eth_get_block_by_number function it conveerted the i32 into string with prefix of '0x' again ...
+
+        let block_number_i32 = hex_string_to_i32(&ret);
+        match block_number_i32 {
+            Ok(block_number_int) => {
+                // println!("block_number_i32 {}", block_number_int);
+                let ret = api_client
+                    .eth_get_block_by_number(block_number_int as BlockNumber, true)
+                    .await;
+                // println!("ret content {:?}", ret);
+            }
+            Err(err) => {
+                eprintln!("failed to convert {:?} into i32 with error {:?}", ret, err);
+                return;
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn test_eth_get_block_by_hash() {
+        // first create instance of ApiClient
+        let api_client = ApiClient::new(None);
+
+        // get a block number
+        let mut ret = api_client.eth_block_number().await;
+        let retry_max_time = 3;
+        let mut retry_cnt = 0;
+
+        // some times remote api is not always return a valid block number
+        while retry_cnt < retry_max_time && !ret.is_string() {
+            ret = api_client.eth_block_number().await;
+            retry_cnt += 1;
+        }
+
+        if !ret.is_string() && retry_cnt >= retry_max_time {
+            eprintln!("Retry 3 times but all failed to fetch a valid block number value, skipping this test.");
+            return;
+        }
+
+        let block_number_ret = hex_string_to_i32(&ret);
+
+        let block_number = match block_number_ret {
+            Ok(block_number_i32) => block_number_i32,
+            Err(err) => {
+                eprintln!("failed to convert {:?} into i32 with error {:?}", ret, err);
+                return;
+            }
+        };
+
+        let block_query_by_block_number = api_client
+            .eth_get_block_by_number(block_number, false)
+            .await;
+
+        let block_1_block_number = if let Some(block_number_value) = block_query_by_block_number
+            .get("number")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string())
+        {
+            block_number_value
+        } else {
+            eprintln!("No 'number' field found in response json value");
+            String::new()
+        };
+
+        let block_1_hash = if let Some(block_hash_value) = block_query_by_block_number
+            .get("hash")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string())
+        {
+            block_hash_value
+        } else {
+            eprint!("No 'hash' field found in response json value");
+            String::new()
+        };
+
+        let block_query_by_hash_value = api_client
+            .eth_get_block_by_hash(block_1_hash.clone() as BlockHash, false)
+            .await;
+
+        // after we got block result, continue with parsing the inner field of its block number and hash
+        let block_2_hash = if let Some(block_hash_value) = block_query_by_hash_value
+            .get("hash")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string())
+        {
+            block_hash_value
+        } else {
+            eprintln!("No 'hash' field found in response json value");
+            String::new()
+        };
+
+        let block_2_block_number = if let Some(block_number_value) = block_query_by_hash_value
+            .get("number")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string())
+        {
+            block_number_value
+        } else {
+            eprintln!("No 'number' field found in response json value");
+            String::new()
+        };
+
+        // finally, compare with the first block's block number, hash value should be matched with the second block's block number
+        // and both of the block number value should be matched with the first query's eth_block_number's block number value
+        assert_eq!(block_2_block_number, block_1_block_number);
+        assert_eq!(block_1_hash, block_2_hash);
+        assert_eq!(
+            block_number,
+            i32::from_str_radix(&block_2_block_number[2..], 16)
+                .expect("block number as 0x... should be parsed correctly")
+        );
+    }
+
+    // -- util functions --
+    fn hex_string_to_i32(ret: &Value) -> Result<i32, ParseIntError> {
         let block_number: String = if let Some(value) = ret.as_str() {
             value.to_string()
         } else {
@@ -283,23 +397,6 @@ mod tests {
         };
 
         assert!(block_number.len() > 0);
-        let block_number_i32 = i32::from_str_radix(&block_number[2..], 16);
-
-        match block_number_i32 {
-            Ok(block_number_int) => {
-                println!("block_number_i32 {}", block_number_int);
-                let ret = api_client
-                    .eth_get_block_by_number(block_number_int as BlockNumber, true)
-                    .await;
-                println!("ret content {:?}", ret);
-            }
-            Err(err) => {
-                eprintln!(
-                    "failed to convert {:?} into i32 with error {:?}",
-                    block_number, err
-                );
-                return;
-            }
-        }
+        i32::from_str_radix(&block_number[2..], 16)
     }
 }

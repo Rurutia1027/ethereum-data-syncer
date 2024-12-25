@@ -54,7 +54,7 @@ impl EthRpcMethodName {
 
 pub trait EthereumRpcMethods {
     // eth_getBlockByHash
-    async fn eth_get_block_by_hash(&self, hash: BlockHash) -> Value;
+    async fn eth_get_block_by_hash(&self, hash: BlockHash, full_transaction: bool) -> Value;
 
     // eth_blockNumber
     async fn eth_block_number(&self) -> Value;
