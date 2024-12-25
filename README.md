@@ -1,6 +1,4 @@
-# Ethereum Data Syncer
-
-[![Ethereum Data Syncer](https://img.shields.io/badge/ethereum%20data%20syncer-blue)](git@github.com:Rurutia1027/ethereum-data-syncer.git)
+# Ethereum Data Syncer [![Ethereum Data Syncer CI](https://github.com/Rurutia1027/ethereum-data-syncer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Rurutia1027/ethereum-data-syncer/actions/workflows/ci.yml)
 
 Ethereum Data Syncer is a powerful tool that helps developers synchronize Ethereum blockchain data across different platforms and environments. It supports multiple data types and request methods including real-time event subscription, data replay, and point-to-point JSON-RPC communication.
 
