@@ -1,10 +1,13 @@
+use std::process::id;
+
 use reqwest::Error as ReqwestError;
 use thiserror::Error;
 
+use super::{BlockHash, BlockNumber, EthRpcMethodName, EthereumRpcMethods};
 use crate::env::ENV_CONFIG;
 use reqwest::{Client, Error};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{json, Value};
 
 // rest_api will abstract HTTP requests to fetch Ethereum-related data through Alchemy's third-party API platform.
 
@@ -26,7 +29,7 @@ pub struct EthereumRequest {
     jsonrpc: String,
     id: u32,
     method: String,
-    params: Vec<String>,
+    params: Value,
 }
 
 /**
@@ -110,12 +113,17 @@ impl ApiClient {
     /// * `params` - The parameters to add to the request body
     /// # Returns
     /// A `Result` containing the parsed success or error response.
-    async fn call(&self, method: &str, params: Vec<String>) -> EthereumApiResult<Value> {
+    async fn call(
+        &self,
+        method: EthRpcMethodName,
+        params: Value,
+        id: u32,
+    ) -> EthereumApiResult<Value> {
         // Create the request body
         let request_body = EthereumRequest {
             jsonrpc: "2.0".to_string(),
-            id: 1,
-            method: method.to_string(),
+            id: id,
+            method: method.name().to_string(),
             params,
         };
 
@@ -152,6 +160,59 @@ impl ApiClient {
         Err(EthereumApiError::UnknownError(
             "Response contains neither `result` nor `error` field".to_string(),
         ))
+    }
+}
+
+impl EthereumRpcMethods for ApiClient {
+    async fn eth_get_block_by_hash(&self, hash: BlockHash) -> Value {
+        let method = EthRpcMethodName::ETH_GETBLOCKBYHASH;
+        // todo!(), we need to create two id_pool one for subscribe stream,
+        // the other for this rpc-json api request
+        // every time, in call function, once receive response body,
+        // the first thing is check whether response#id
+        // value match with the request's id field's value
+
+        // but for now, take 1 for temporary
+        self.call(method, json!((hash)), 1)
+            .await
+            .unwrap_or_default()
+    }
+
+    async fn eth_block_number(&self) -> Value {
+        let method = EthRpcMethodName::ETH_BLOCKNUMBER;
+        self.call(method, json!(()), 1).await.unwrap_or_default()
+    }
+
+    async fn eth_get_block_by_number(
+        &self,
+        block_number: BlockNumber,
+        full_transaction: bool,
+    ) -> Value {
+        let method = EthRpcMethodName::ETH_GETBLOCKBYNUMBER;
+        self.call(method, json!((block_number, full_transaction)), 1)
+            .await
+            .unwrap_or_default()
+    }
+
+    async fn eth_get_block_receipts(&self, hash: BlockHash) -> Value {
+        let method = EthRpcMethodName::ETH_GETBLOCKRECEIPTS;
+        self.call(method, json!((hash)), 1)
+            .await
+            .unwrap_or_default()
+    }
+
+    async fn eth_get_block_transaction_count_by_hash(&self, hash: BlockHash) -> Value {
+        let method = EthRpcMethodName::ETH_GETBLOCKTRANSACTIONCOUNTBYHASH;
+        self.call(method, json!((hash)), 1)
+            .await
+            .unwrap_or_default()
+    }
+
+    async fn eth_get_block_transaction_count_by_number(&self, block_number: BlockNumber) -> Value {
+        let method = EthRpcMethodName::ETH_GETBLOCKTRANSACTIONCOUNTBYNUMBER;
+        self.call(method, json!((block_number)), 1)
+            .await
+            .unwrap_or_default()
     }
 }
 
