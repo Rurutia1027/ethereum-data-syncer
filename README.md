@@ -98,6 +98,6 @@ You can start syncing Ethereum data by connecting to your preferred provider’s
 
 We welcome contributions to enhance the features of Ethereum Data Syncer. If you have any ideas or improvements, please feel free to open an issue or submit a pull request. 1. Fork the repository. 2. Create a new branch for your feature or bug fix. 3. Make your changes. 4. Commit and push your changes. 5. Create a pull request.
 
-##License
+## 📇 License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
