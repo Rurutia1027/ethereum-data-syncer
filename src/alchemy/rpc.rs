@@ -233,4 +233,12 @@ mod tests {
         assert_eq!(api_client.api_key, ENV_CONFIG.alchemy_api_key);
         assert_eq!(api_client.api_url, ENV_CONFIG.alchemy_url);
     }
+
+    #[tokio::test]
+    async fn test_eth_block_number() {
+        // first create instance of ApiClient
+        let api_client = ApiClient::new(None);
+        let ret = api_client.eth_block_number().await;
+        assert!(ret.is_string());
+    }
 }
