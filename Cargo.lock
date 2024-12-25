@@ -1730,6 +1730,7 @@ dependencies = [
  "eyre",
  "futures-util",
  "lazy_static",
+ "maplit",
  "reqwest 0.11.27",
  "serde",
  "serde_json",
@@ -2606,6 +2607,12 @@ checksum = "234cf4f4a04dc1f57e24b96cc0cd600cf2af460d4161ac5ecdd0af8e1f3b2a38"
 dependencies = [
  "hashbrown 0.15.2",
 ]
+
+[[package]]
+name = "maplit"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
 
 [[package]]
 name = "matchit"

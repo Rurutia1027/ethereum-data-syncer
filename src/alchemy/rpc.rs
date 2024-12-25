@@ -1,6 +1,6 @@
-use std::process::id;
-
+use maplit::hashset;
 use reqwest::Error as ReqwestError;
+use std::collections::HashSet;
 use thiserror::Error;
 
 use super::{BlockHash, BlockNumber, EthRpcMethodName, EthereumRpcMethods};
@@ -124,7 +124,7 @@ impl ApiClient {
             jsonrpc: "2.0".to_string(),
             id: id,
             method: method.name().to_string(),
-            params,
+            params: params.clone(),
         };
 
         // Send the request
@@ -138,6 +138,14 @@ impl ApiClient {
 
         // Parse the response as JSON
         let response_body: Value = response.json().await?;
+
+        // debug:
+        // println!(
+        //     "{:?} call ret body {:?} params: {:?}",
+        //     method.name(),
+        //     response_body,
+        //     json!(request_body)
+        // );
 
         // Check if response contains an "error" field, if so extract it's inner fields
         // to create EthereumApiError::RpcError's inner fields
@@ -200,21 +208,21 @@ impl EthereumRpcMethods for ApiClient {
 
     async fn eth_get_block_receipts(&self, hash: BlockHash) -> Value {
         let method = EthRpcMethodName::ETH_GETBLOCKRECEIPTS;
-        self.call(method, json!((hash)), 1)
+        self.call(method, json!((hash,)), 1)
             .await
             .unwrap_or_default()
     }
 
     async fn eth_get_block_transaction_count_by_hash(&self, hash: BlockHash) -> Value {
         let method = EthRpcMethodName::ETH_GETBLOCKTRANSACTIONCOUNTBYHASH;
-        self.call(method, json!((hash)), 1)
+        self.call(method, json!((hash,)), 1)
             .await
             .unwrap_or_default()
     }
 
     async fn eth_get_block_transaction_count_by_number(&self, block_number: BlockNumber) -> Value {
         let method = EthRpcMethodName::ETH_GETBLOCKTRANSACTIONCOUNTBYNUMBER;
-        self.call(method, json!((Self::to_hex_string(block_number))), 1)
+        self.call(method, json!((Self::to_hex_string(block_number),)), 1)
             .await
             .unwrap_or_default()
     }
@@ -222,11 +230,8 @@ impl EthereumRpcMethods for ApiClient {
 
 #[cfg(test)]
 mod tests {
-    use std::{num::ParseIntError, process::exit};
-
-    use serde::de::value;
-
     use super::*;
+    use std::num::ParseIntError;
 
     #[test]
     fn test_create_api_client() {
@@ -394,7 +399,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_eth_get_block_receipts() {
+    async fn test_eth_get_block_transaction_count_by_number() {
         // first get block number value via get_blockNumber API request
         let api_client = ApiClient::new(None);
 
@@ -435,15 +440,146 @@ mod tests {
     #[tokio::test]
     async fn test_eth_get_block_transaction_count_by_hash() {
         // first, get block number value via get_blockNumber API request
-        // then, query block item via eth_getBlockByNumber
+        let api_client = ApiClient::new(None);
+
         // then, extract the hash field from the fresh block item, and query eth_blockTransactionCountByHash
+        // fetch a block number from remote(Alchemy)
+        let mut ret = api_client.eth_block_number().await;
+        let retry_max_time = 3;
+        let mut retry_cnt = 0;
+
+        while retry_cnt < retry_max_time && !ret.is_string() {
+            ret = api_client.eth_block_number().await;
+            retry_cnt += 1;
+        }
+
+        if !ret.is_string() {
+            eprint!("Retry 3 times but all failed to fetch a valid block number value, skipping this test.");
+            return;
+        }
+
+        let block_number_ret = hex_string_to_i32(&ret)
+            .expect("ret value of hex string of block number should be parsed into i32 correctly");
+        assert!(block_number_ret > 0);
+
+        // then take the queried fresh block number query for a block
+        let block = api_client
+            .eth_get_block_by_number(block_number_ret, false)
+            .await;
+
+        let block_hash_value = if let Some(block_hash) = block
+            .get("hash")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string())
+        {
+            block_hash
+        } else {
+            eprintln!("No 'hash' field found in response json value");
+            return;
+        };
+
+        assert!(block_hash_value.len() > 0);
+        let ret = api_client
+            .eth_get_block_transaction_count_by_hash(block_hash_value)
+            .await;
+
+        assert!(ret.is_string());
+
+        let transaction_count_in_given_block_hash = hex_string_to_i32(&ret)
+            .expect("count value expectdd to be parsed from hex string correctly.");
+        assert!(transaction_count_in_given_block_hash > 0);
+        println!(
+            "transaction_count_in_given_block_hash: {:?}",
+            transaction_count_in_given_block_hash
+        );
     }
 
     #[tokio::test]
-    async fn test_eth_get_block_transaction_count_by_number() {
+    async fn eth_get_block_receipts() {
+        let api_client = ApiClient::new(None);
         // first, get block number value via get_blockNumber API request
+        let mut ret = api_client.eth_block_number().await;
+        let retry_max_time = 3;
+        let mut retry_cnt = 0;
+
+        while retry_cnt < retry_max_time && !ret.is_string() {
+            ret = api_client.eth_block_number().await;
+            retry_cnt += 1;
+        }
+
+        if !ret.is_string() {
+            eprint!("Retry 3 times but all failed to fetch a valid block number value, skipping this test.");
+            return;
+        }
+
         // then, query block item via eth_getBlockByNumber
-        // then, extract the block number field from the fresh block item, and query eth_blockTransactionCountByHash
+        let block_number_ret = hex_string_to_i32(&ret)
+            .expect("ret value of hex string should be parsed into i32 correctly");
+        assert!(block_number_ret > 0);
+
+        // then take the queried fresh block number query for a block
+        let block = api_client
+            .eth_get_block_by_number(block_number_ret, false)
+            .await;
+
+        let block_hash_value = if let Some(block_hash) = block
+            .get("hash")
+            .and_then(|v| v.as_str())
+            .map(|s| s.to_string())
+        {
+            block_hash
+        } else {
+            eprintln!("No 'hash' field found in response json value");
+            return;
+        };
+
+        assert!(block_hash_value.len() > 0);
+
+        // then, extract the block hash field from the fresh block item, and query eth_get_block_receipts
+        let ret = api_client.eth_get_block_receipts(block_hash_value).await;
+        // println!("ret content {:?}", ret);
+
+        // there are many fields key in the response of the receipts message body
+        // and take some of the keys and verify whether they all exists,
+        // if so it means the responsse receipts is verified and this api is request & response correctly
+
+        // create a hash set with all receipt response body required key names
+        let fields: HashSet<&str> = [
+            "transactionHash",
+            "blockHash",
+            "blockNumber",
+            "logsBloom",
+            "gasUsed",
+            "contractAddress",
+            "cumulativeGasUsed",
+            "transactionIndex",
+            "from",
+            "to",
+            "type",
+            "effectiveGasPrice",
+            "logs",
+            "status",
+        ]
+        .iter()
+        .copied()
+        .collect();
+
+        let missing_keys: Vec<String> = match ret {
+            Value::Object(map) => map
+                .keys()
+                .filter(|key| !fields.contains(key.as_str()))
+                .cloned()
+                .collect(),
+            _ => {
+                eprint!("Value type of response body should be converted correctly!");
+                return;
+            }
+        };
+
+        assert!(
+            missing_keys.is_empty(),
+            "all keys in the fields should be find in the response body otherwise the response body is not correct!!"
+        )
     }
 
     // -- util functions --
