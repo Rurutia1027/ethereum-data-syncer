@@ -25,12 +25,14 @@ use serde_json::Value;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum EthRpcMethodName {
+    // Block
     ETH_BLOCKNUMBER,
     ETH_GETBLOCKBYHASH,
     ETH_GETBLOCKBYNUMBER,
     ETH_GETBLOCKRECEIPTS,
     ETH_GETBLOCKTRANSACTIONCOUNTBYHASH,
     ETH_GETBLOCKTRANSACTIONCOUNTBYNUMBER,
+    //
 }
 
 impl EthRpcMethodName {
@@ -72,4 +74,9 @@ pub trait EthereumRpcMethods {
 
     // eth_getBlockTransactionCountByNumber
     async fn eth_get_block_transaction_count_by_number(&self, block_number: BlockNumber) -> Value;
+
+    // -- inner utils functions --
+    fn to_hex_string(block_number: BlockNumber) -> String {
+        format!("0x{:x}", block_number)
+    }
 }

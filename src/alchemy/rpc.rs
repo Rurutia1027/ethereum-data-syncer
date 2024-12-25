@@ -189,9 +189,13 @@ impl EthereumRpcMethods for ApiClient {
         full_transaction: bool,
     ) -> Value {
         let method = EthRpcMethodName::ETH_GETBLOCKBYNUMBER;
-        self.call(method, json!((block_number, full_transaction)), 1)
-            .await
-            .unwrap_or_default()
+        self.call(
+            method,
+            json!((Self::to_hex_string(block_number), full_transaction)),
+            1,
+        )
+        .await
+        .unwrap_or_default()
     }
 
     async fn eth_get_block_receipts(&self, hash: BlockHash) -> Value {
@@ -210,7 +214,7 @@ impl EthereumRpcMethods for ApiClient {
 
     async fn eth_get_block_transaction_count_by_number(&self, block_number: BlockNumber) -> Value {
         let method = EthRpcMethodName::ETH_GETBLOCKTRANSACTIONCOUNTBYNUMBER;
-        self.call(method, json!((block_number)), 1)
+        self.call(method, json!((Self::to_hex_string(block_number))), 1)
             .await
             .unwrap_or_default()
     }
@@ -218,6 +222,10 @@ impl EthereumRpcMethods for ApiClient {
 
 #[cfg(test)]
 mod tests {
+    use std::process::exit;
+
+    use serde::de::value;
+
     use super::*;
 
     #[test]
@@ -240,5 +248,58 @@ mod tests {
         let api_client = ApiClient::new(None);
         let ret = api_client.eth_block_number().await;
         assert!(ret.is_string());
+    }
+
+    #[tokio::test]
+    async fn test_eth_get_block_by_number() {
+        // first create instance of ApiClient
+        let api_client = ApiClient::new(None);
+
+        // get a block number
+        let mut ret = api_client.eth_block_number().await;
+        let retry_max_time = 3;
+        let mut retry_cnt = 0;
+
+        // some times remote api is not always return a valid block number
+        while retry_cnt < retry_max_time && !ret.is_string() {
+            ret = api_client.eth_block_number().await;
+            retry_cnt += 1;
+        }
+
+        if !ret.is_string() && retry_cnt >= retry_max_time {
+            eprintln!("Retry 3 times but all failed to fetch a valid block number value, skipping this test.");
+            return;
+        }
+
+        // have to say here's logic is a bit complex...
+        // what we want to do is the extract received valid block number like 0x...
+        // and converted it back into a valid value in type of i32 which declared as the BlockNumber
+        // which invoke function of eth_get_block_by_number requires
+        // but, again... in the scope of eth_get_block_by_number function it conveerted the i32 into string with prefix of '0x' again ...
+        let block_number: String = if let Some(value) = ret.as_str() {
+            value.to_string()
+        } else {
+            String::new()
+        };
+
+        assert!(block_number.len() > 0);
+        let block_number_i32 = i32::from_str_radix(&block_number[2..], 16);
+
+        match block_number_i32 {
+            Ok(block_number_int) => {
+                println!("block_number_i32 {}", block_number_int);
+                let ret = api_client
+                    .eth_get_block_by_number(block_number_int as BlockNumber, true)
+                    .await;
+                println!("ret content {:?}", ret);
+            }
+            Err(err) => {
+                eprintln!(
+                    "failed to convert {:?} into i32 with error {:?}",
+                    block_number, err
+                );
+                return;
+            }
+        }
     }
 }
