@@ -35,6 +35,8 @@ This project provides an easy-to-use interface to fetch, store, and process Ethe
 - **Customizable**  
   Easily extendable to support other Ethereum APIs and enhance synchronization capabilities.
 
+--- 
+
 ## Setup and Installation
 
 1. Clone the repository
@@ -46,7 +48,7 @@ cd ethereum-data-syncer
 
 2. Install Dependencies
 
-- Install Dependecy Librarys
+- Install Dependency Library
 
 ```bash
 
@@ -60,6 +62,11 @@ cd ethereum-data-syncer
 
 3. Configure Ethereum API credentials
 
+```bash
+```
+
+--- 
+
 ## 💡 Usage
 
 You can start syncing Ethereum data by connecting to your preferred provider’s API and subscribing to the necessary events.
@@ -68,6 +75,8 @@ You can start syncing Ethereum data by connecting to your preferred provider’s
 
 ```
 
+--- 
+
 ## 🌐 Supported Platforms
 
 - **Infura**: Infura provides access to Ethereum via JSON-RPC and WebSocket protocols, ideal for production applications.
@@ -75,9 +84,15 @@ You can start syncing Ethereum data by connecting to your preferred provider’s
 - **QuickNode**: QuickNode is a fast Ethereum API provider offering WebSocket support and optimized data delivery.
 - **Local Node**: You can also connect to your own Ethereum node using Geth, OpenEthereum, or Besu.
 
+--- 
+
 ## ⚙️ How to Use
 
+--- 
+
 ## 🚀 Quick Start
+
+--- 
 
 ## 🤝 Contributing
 
