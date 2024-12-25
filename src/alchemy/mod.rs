@@ -1,7 +1,7 @@
 pub mod blocks;
 pub mod decoders;
-pub mod event_stream;
-pub mod rest_api;
+pub mod rpc;
+pub mod subscribe;
 pub mod transactions;
 
 pub type BlockNumber = i32;
