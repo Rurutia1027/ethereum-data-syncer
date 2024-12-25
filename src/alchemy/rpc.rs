@@ -293,6 +293,11 @@ mod tests {
         }
     }
 
+    // add a todo!() here
+    // imple api_client instance to test context in the scope of mod tests
+    // so that we do not need to create && initialize multiple instances for it
+    // all test cases share the same instance of api_client, and make sure api_client is thread-safe and let it protected by
+    // Mutex and Arc
     #[tokio::test]
     async fn test_eth_get_block_by_hash() {
         // first create instance of ApiClient
@@ -386,6 +391,59 @@ mod tests {
             i32::from_str_radix(&block_2_block_number[2..], 16)
                 .expect("block number as 0x... should be parsed correctly")
         );
+    }
+
+    #[tokio::test]
+    async fn test_eth_get_block_receipts() {
+        // first get block number value via get_blockNumber API request
+        let api_client = ApiClient::new(None);
+
+        // fetch a block number from remote(Alchemy)
+        let mut ret = api_client.eth_block_number().await;
+        let retry_max_time = 3;
+        let mut retry_cnt = 0;
+
+        while retry_cnt < retry_max_time && !ret.is_string() {
+            ret = api_client.eth_block_number().await;
+            retry_cnt += 1;
+        }
+
+        if !ret.is_string() {
+            eprint!("Retry 3 times but all failed to fetch a valid block number value, skipping this test.");
+            return;
+        }
+
+        let block_number_ret = hex_string_to_i32(&ret)
+            .expect("ret value of hex string of block number should be parsed into i32 correctly");
+        assert!(block_number_ret > 0);
+
+        // then take the queried fresh block number query eth_blockTransactionCountByNumber
+        let ret = api_client
+            .eth_get_block_transaction_count_by_number(block_number_ret)
+            .await;
+
+        assert!(ret.is_string());
+        let transaction_count_in_given_block_number = hex_string_to_i32(&ret)
+            .expect("transaction count value should be parsed correctly from hex string");
+        assert!(transaction_count_in_given_block_number > 0);
+        println!(
+            "transaction_count_in_given_block_number : {:?}",
+            transaction_count_in_given_block_number
+        );
+    }
+
+    #[tokio::test]
+    async fn test_eth_get_block_transaction_count_by_hash() {
+        // first, get block number value via get_blockNumber API request
+        // then, query block item via eth_getBlockByNumber
+        // then, extract the hash field from the fresh block item, and query eth_blockTransactionCountByHash
+    }
+
+    #[tokio::test]
+    async fn test_eth_get_block_transaction_count_by_number() {
+        // first, get block number value via get_blockNumber API request
+        // then, query block item via eth_getBlockByNumber
+        // then, extract the block number field from the fresh block item, and query eth_blockTransactionCountByHash
     }
 
     // -- util functions --
